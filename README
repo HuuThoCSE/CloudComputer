@@ -1,0 +1,37 @@
+Để cài đặt MySQL trên microk8s, bạn cần làm theo các bước sau:
+
+1. Cài đặt microk8s trên máy bằng lệnh:
+
+```
+sudo snap install microk8s --classic
+```
+
+2. Bật các addons cần thiết cho MySQL:
+
+```
+microk8s enable dns storage rbac
+```
+
+3. Tạo một namespace cho MySQL:
+
+```
+microk8s kubectl create namespace mysql
+```
+
+4. Tạo một secret chứa mật khẩu cho tài khoản root của MySQL:
+
+```
+microk8s kubectl create secret generic mysql-pass --namespace=mysql --from-literal=password='YOUR_ROOT_PASSWORD'
+```
+
+Thay YOUR_ROOT_PASSWORD bằng mật khẩu mong muốn.
+
+5. Cài đặt MySQL bằng helm chart:
+
+```
+microk8s helm install mysql bitnami/mysql --namespace mysql --set primary.persistence.existingClaim=mysql-pv-claim --set auth.rootPassword=$YOUR_ROOT_PASSWORD
+```
+
+Lệnh này sẽ cài MySQL và tạo một PVC để lưu trữ dữ liệu. Bạn có thể truy cập và quản lý MySQL thông qua các services trong Kubernetes.
+
+Như vậy là đã cài đặt thành công MySQL trên microk8s.
