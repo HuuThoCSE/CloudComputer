@@ -35,3 +35,42 @@ microk8s helm install mysql bitnami/mysql --namespace mysql --set primary.persis
 Lệnh này sẽ cài MySQL và tạo một PVC để lưu trữ dữ liệu. Bạn có thể truy cập và quản lý MySQL thông qua các services trong Kubernetes.
 
 Như vậy là đã cài đặt thành công MySQL trên microk8s.
+
+
+Để có thể truy cập và sử dụng MySQL sau khi cài đặt trên microk8s, bạn cần thực hiện các bước sau:
+
+1. Xác định port mà MySQL đang lắng nghe
+
+Sử dụng lệnh sau để liệt kê các pod đang chạy MySQL:
+
+```
+microk8s kubectl get pods -n mysql
+```
+
+Lưu ý cổng được gán cho pod mysql, ví dụ 3306.
+
+2. Forward port từ pod MySQL ra local
+
+Sử dụng lệnh sau, thay thế POD_NAME và PORT: 
+
+```
+microk8s kubectl port-forward -n mysql POD_NAME PORT:PORT
+```
+
+Ví dụ:
+
+```
+microk8s kubectl port-forward -n mysql mysql-7d485968b-sm7bp 3306:3306
+```
+
+3. Truy cập MySQL 
+
+Giờ bạn có thể truy cập MySQL trên máy local thông qua port vừa forward ở bước trước, ví dụ 3306. Sử dụng câu lệnh sau để truy cập với tài khoản root:
+
+```
+mysql -u root -p -h 127.0.0.1 -P 3306
+```
+
+Nhập mật khẩu đã đặt cho root khi cài đặt.
+
+Bây giờ bạn đã có thể truy cập và sử dụng MySQL trên microk8s.
