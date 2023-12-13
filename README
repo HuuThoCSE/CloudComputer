@@ -74,3 +74,31 @@ mysql -u root -p -h 127.0.0.1 -P 3306
 Nhập mật khẩu đã đặt cho root khi cài đặt.
 
 Bây giờ bạn đã có thể truy cập và sử dụng MySQL trên microk8s.
+
+
+
+Lỗi này xảy ra vì microk8s không thể tải về chart mysql từ kho helm bitnami.
+
+Để khắc phục, bạn cần thêm kho (repository) helm chứa mysql chart vào trong microk8s:
+
+```
+microk8s helm repo add bitnami https://charts.bitnami.com/bitnami
+```
+
+Sau đó update lại registry helm:
+
+```
+microk8s helm repo update
+```
+
+Bây giờ thử cài đặt lại xem:
+
+``` 
+microk8s helm install mysql bitnami/mysql --namespace mysql --set primary.persistence.existingClaim=mysql-pv-claim --set auth.rootPassword=$123456
+```
+
+Lưu ý là cần phải thêm kho helm bitnami vào trước khi cài đặt các chart từ bitnami.
+
+Nếu vẫn gặp lỗi, hãy kiểm tra lại các bước cài đặt đầu vào như tạo namespace, enable các addons...
+
+Hy vọng điều này giúp bạn khắc phục được lỗi trên khi cài đặt mysql trên microk8s nhé.
